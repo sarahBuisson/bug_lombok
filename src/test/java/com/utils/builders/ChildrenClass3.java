@@ -1,6 +1,7 @@
 package com.utils.builders;
 
 import com.ParentClass;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.experimental.ExtensionMethod;
@@ -15,7 +16,7 @@ class ChildrenClass3 extends ParentClass {
     }
 
     public static ChildrenClass3Builder fromJson(String json) {
-       return new ChildrenClass3Builder().fromJson(json);
+       return ChildrenClass3Builder.class.fromJson(json);
     }
 
 }

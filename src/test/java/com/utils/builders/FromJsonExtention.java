@@ -1,33 +1,20 @@
 package com.utils.builders;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.Arrays;
+import com.fasterxml.jackson.databind.introspect.DefaultAccessorNamingStrategy;
+import org.junit.jupiter.api.Assertions;
 
 public class FromJsonExtention {
 
+    public static ObjectMapper mapper = new ObjectMapper()
+            .setAccessorNaming(new DefaultAccessorNamingStrategy.Provider().withSetterPrefix("with"));
 
-
-    public static <ClassBuilder> ClassBuilder fromJson(ClassBuilder builder, String json) {
-
+    public static <ClassBuilder> ClassBuilder fromJson(Class<ClassBuilder> builder, String json) {
         try {
-            var clazz = builder.getClass().getDeclaringClass();
-
-            var initialValue = new ObjectMapper().readValue(json, clazz);
-            Arrays.stream(clazz.getMethods()).filter(m -> m.getName().startsWith("get")&&!m.getName().equals("getClass")).forEach(
-                    m -> {
-                        try {
-                            builder.getClass().getMethod(m.getName().replace("get", "with"), m.getReturnType()).invoke(builder, m.invoke(initialValue));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-            );
-            return builder;
-        } catch (Exception e) {
-
-            e.printStackTrace();
+            return mapper.readValue(json, builder);
+        } catch (JsonProcessingException e) {
+            Assertions.fail(e.getMessage());
         }
         return null;
     }
